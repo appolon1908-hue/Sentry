@@ -10,7 +10,8 @@ export DOCKER_CONFIG="$PUBLIC_DOCKER_CONFIG"
 readonly ROOT=/opt/codestra-sentry
 readonly UPSTREAM="$ROOT/upstream"
 readonly RELEASE=26.8.0
-readonly PRIVATE_URL=http://10.40.0.4:19000
+readonly PUBLIC_URL=https://sentry.codestra.co
+readonly HEALTH_URL=http://10.40.0.4:19000
 install -d -m 0750 "$ROOT"
 if [[ ! -d "$UPSTREAM/.git" ]]; then
   git clone --depth 1 --branch "$RELEASE" https://github.com/getsentry/self-hosted.git "$UPSTREAM"
@@ -37,10 +38,10 @@ set_env() {
 }
 set_env SENTRY_BIND 10.40.0.4:19000
 set_env SENTRY_EVENT_RETENTION_DAYS 30
-sed -i "s|^# system.url-prefix:.*|system.url-prefix: '$PRIVATE_URL'|" sentry/config.yml
+sed -i "s|^# system.url-prefix:.*|system.url-prefix: '$PUBLIC_URL'|" sentry/config.yml
 docker compose up -d
 for _ in $(seq 1 60); do
-  curl -fsS "$PRIVATE_URL/_health/" >/dev/null && exit 0
+  curl -fsS "$HEALTH_URL/_health/" >/dev/null && exit 0
   sleep 10
 done
 docker compose ps
