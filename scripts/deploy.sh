@@ -21,7 +21,7 @@ cd "$UPSTREAM"
 git diff --exit-code
 export SENTRY_BIND=10.40.0.4:19000
 if [[ ! -f .codestra-installed ]]; then
-  ./install.sh --skip-user-creation
+  ./install.sh --skip-user-creation --no-report-self-hosted-issues --no-apply-automatic-config-updates
   touch .codestra-installed
 fi
 grep -q '^SENTRY_BIND=' .env 2>/dev/null && sed -i 's/^SENTRY_BIND=.*/SENTRY_BIND=10.40.0.4:19000/' .env || printf '\nSENTRY_BIND=10.40.0.4:19000\n' >> .env
